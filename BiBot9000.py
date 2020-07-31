@@ -5,11 +5,13 @@ This is an automated trading bot built for the Binance platform, which places au
 
 -Utilizing Python-Binance Wrapper( https://github.com/sammchardy/python-binance )
 -Expanded and inpired by trading bots developed by Joaquin Roibal
-    (https://github.com/Roibal/Cryptocurrency-Trading-Bots-Python-Beginner-Advance)
+   (https://github.com/Roibal/Cryptocurrency-Trading-Bots-Python-Beginner-Advance)
+-Utilizing RSI Technical Indicator from taapi.io
 
 v0.1 - Updated 7/25/2020 - BTC and ETH price and RSI tracking. Buy/Sell Automation from preset criteria. 
+v0.2 - Updated 7/30/2020 - Bug fixes and tweaks
 
-@author: dantastic_dan
+@author: dantasticdan
 """
 
 #import keys
@@ -25,23 +27,17 @@ from BinanceKeys import BinanceKey1
 api_key = BinanceKey1['api_key']
 api_secret = BinanceKey1['api_secret']
 
-#TAAPI API Definitions
-# Define indicator
-indicator = "rsi"
-# Define endpoint 
-endpoint = f"https://ta.taapi.io/rsi"
-# Define a parameters dict for the parameters to be sent to the API 
-parameters = {
-    'secret': '[TAAPI API SECRET]',
-    'exchange': 'binance',
-    'symbol': 'XTZ/BTC',
-    'interval': '5m'
-    } 
-
 client = Client(api_key, api_secret)
 
+#TAAPI.io API Definitions
+ # Define indicator
+indicator = "rsi"
+ # Define endpoint 
+endpoint = f"https://ta.taapi.io/rsi"
+
+
 def run():
-    inOrder= True
+    inOrder= False
     watch_list = ['SYSBTC','GVTBTC','CDTBTC','TROYBTC','RUNEBTC','SKYBTC','SXPBTC','NULSBTC']
     micro_cap_coins = ['ICXBNB', 'BRDBNB', 'NAVBNB', 'RCNBNB','FUNETH','COTETH']
     eth_watch_list = ['BQXETH','EVXETH']
@@ -50,7 +46,7 @@ def run():
     eth_bot_watch_list = []
     rsi_list = []
     
-    last_active_symbol = ['ONEBTC']
+    last_active_symbol = ['STMXBTC']
     
      #time_horizon = "Short"
     #Risk = "High"
@@ -76,14 +72,14 @@ def run():
                #print(price['symbol'], end ="  % Chg: ")
                #print(price['priceChangePercent'], end ="  Volume: ")
                #print(price['quoteVolume'])
-               if float(price['priceChangePercent']) > 6 and float(price['quoteVolume']) > 600:
+               if float(price['priceChangePercent']) > 5 and float(price['quoteVolume']) > 1000:
                    bot_watch_list.insert(0,price['symbol'])  
            if price['symbol'].endswith('ETH') == True:
                #print(price)
                #print(price['symbol'], end ="  % Chg: ")
                #print(price['priceChangePercent'], end ="  Volume: ")
                #print(price['quoteVolume'])
-               if float(price['priceChangePercent']) > 5 and float(price['quoteVolume']) > 500:
+               if float(price['priceChangePercent']) > 5 and float(price['quoteVolume']) > 1000:
                    eth_bot_watch_list.insert(0,price['symbol'])           
                    
         print(bot_watch_list) 
@@ -117,20 +113,21 @@ def run():
         #print(rsi_list)      
         print("#######################################")
               
+              
         #Find lowest RSI from watch list and index     
-        min_rsi = min(rsi_list)
-        min_rsi_index = rsi_list.index(min(rsi_list))
-        min_rsi_symbol = watch_list[min_rsi_index]
-        print("Min RSI Symbol: ", min_rsi_symbol)
-        print("Min RSI: ", min_rsi)
-        print("Min RSI Index: ",min_rsi_index)
+        if rsi_list:
+            min_rsi = min(rsi_list)
+            min_rsi_index = rsi_list.index(min(rsi_list))
+            min_rsi_symbol = watch_list[min_rsi_index]
+            print("Min RSI Symbol: ", min_rsi_symbol)
+            print("Min RSI: ", min_rsi)
+            print("Min RSI Index: ",min_rsi_index)
         #min_rsi_index = rsi_list.index(min(rsi_list))
         #print(min_rsi)
         #print(watch_list[min_rsi_index])
         
         #Trading Logic     
         if inOrder == True: 
-            #symbol = list_of_symbols[0] 
             print("\nActive Order", symbol)
             rsi=(get_rsi(symbol))
             rsi_value = (rsi['value'])
@@ -139,7 +136,7 @@ def run():
             if rsi_value > 70:
                 order_amount = int(check_balance(symbol))
                 #print(order_amount)
-                #market_sell(symbol, 1347)
+                #market_sell(symbol, 3129)
                 market_sell(symbol, order_amount)
                 print("Sell Order Triggered!! (RSI > 70) ")
                 print("Symbol: ",symbol)
@@ -156,11 +153,12 @@ def run():
             if min_rsi < 30:
                 symbol = watch_list[min_rsi_index]
                 order_amount = calculate_order(symbol)
-                #market_buy(symbol, 1513)
+                #market_buy(symbol, 1181)
                 market_buy(symbol, order_amount)
                 print("Buy Order Triggered!! (RSI < 30)")
                 print("Symbol: ",symbol)
                 print("Amount: ",order_amount) 
+               
                 inOrder= True
             #elif rsi_value > 70:
             #    print("RSI Selling Opportunity (RSI < 70), but we don't have an Order yet")
@@ -178,10 +176,12 @@ def run():
                 
 def get_rsi(symbol):  
     #convert binance symbol to taapi.io format with forward slash,COIN/MARKET. ie. ETHBTC >> ETH/BTC
-    if len(symbol)>6:
-        taapi_symbol = symbol[:4]+'/'+symbol[4:]
+    if len(symbol) > 7:
+        taapi_symbol = symbol[:5]+'/'+symbol[5:]
+    elif len(symbol) > 6:
+        taapi_symbol = symbol[:4]+'/'+symbol[4:]   
     else:
-        taapi_symbol = symbol[:3]+'/'+symbol[3:]   
+        taapi_symbol = symbol[:3]+'/'+symbol[3:] 
     #print(taapi_symbol)
     #Send get request and save the response as response object 
     parameters['symbol'] = taapi_symbol
@@ -201,10 +201,10 @@ def calculate_order(order_symbol):
     order_symbol_price = avg_price['price']
     order_amount = (float(btc_available) / float(order_symbol_price))
     order_amount = int(order_amount)
-    #print(order_symbol,end =" Price: ")
-    #print(order_symbol_price)
-    #print(order_amount)
-    #print("$$$$$$$$$$$")
+    print(order_symbol,end =" Price: ")
+    print(order_symbol_price)
+    print(order_amount)
+    print("$$$$$$$$$$$")
     return order_amount
 
 def check_balance(order_symbol):
