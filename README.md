@@ -13,19 +13,16 @@
  
 # Prerequisites
 
-Install Python 3.7 (Spyder, PyCharm IDE)
-Python-Binance Library
-Subscription to taapi.io for RSI technical indicators
-
-#DISCLAIMER
-
-THIS SCRIPT WILL TAKE WILL ISSUE TRADES AUTOMATICALLY FROM YOUR BINACNE ACCOUNT. PROCEED WITH CAUTION!
-Be sure to test will small amounts and protect your assets before running for the first time.  
-
+* Install Python 3.7 (Spyder, PyCharm IDE)
+* Python-Binance Library
+* Subscription to taapi.io for RSI technical indicators
 
 # Acknowledgments
 
 * **Samm Chardy** - *Initial work* - [Python-Binance](https://github.com/sammchardy/python-binance)
 * **Blockchain Engineer** - *Trader Bot Examples & Functionality* - [Python-Binance](https://github.com/Roibal/python-binance)
 
+# DISCLAIMER
 
+THIS SCRIPT WILL TAKE WILL ISSUE TRADES AUTOMATICALLY FROM YOUR BINACNE ACCOUNT. PROCEED WITH CAUTION!
+Be sure to test will small amounts and protect your assets before running for the first time.  
