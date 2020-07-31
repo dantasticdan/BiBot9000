@@ -24,5 +24,5 @@
 
 # DISCLAIMER
 
-THIS SCRIPT WILL TAKE WILL ISSUE TRADES AUTOMATICALLY FROM YOUR BINACNE ACCOUNT. PROCEED WITH CAUTION!
-Be sure to test will small amounts and protect your assets before running for the first time.  
+THIS SCRIPT WILL ISSUE TRADES AUTOMATICALLY FROM YOUR BINANCE ACCOUNT!! PROCEED WITH CAUTION!!
+Consider testing with a small amount and protect your assets before running for the first time.  
