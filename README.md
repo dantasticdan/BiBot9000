@@ -12,11 +12,16 @@
  If you are in an order and initiating the script, you must set 'inOrder' to True, and specify the active trading pair in 'last_active_symbol'
  
 # Prerequisites
-```
+
 Install Python 3.7 (Spyder, PyCharm IDE)
 Python-Binance Library
 Subscription to taapi.io for RSI technical indicators
-```
+
+#DISCLAIMER
+
+THIS SCRIPT WILL TAKE WILL ISSUE TRADES AUTOMATICALLY FROM YOUR BINACNE ACCOUNT. PROCEED WITH CAUTION!
+Be sure to test will small amounts and protect your assets before running for the first time.  
+
 
 # Acknowledgments
 
@@ -24,7 +29,3 @@ Subscription to taapi.io for RSI technical indicators
 * **Blockchain Engineer** - *Trader Bot Examples & Functionality* - [Python-Binance](https://github.com/Roibal/python-binance)
 
 
-####### DISCLAIMER ########
-
-THIS SCRIPT WILL TAKE WILL ISSUE TRADES AUTOMATICALLY FROM YOUR BINACNE ACCOUNT. PROCEED WITH CAUTION!
-Be sure to test will small amounts and protect your assets before running for the first time.  
