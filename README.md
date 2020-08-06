@@ -13,8 +13,8 @@
  
 # Prerequisites
 
-* Install Python 3.7 (Spyder, PyCharm IDE)
-* Python-Binance Library
+* Install Python 3.7 (Spyder, PyCharm IDE) 
+* Python-Binance Library (pip3 install python-binance)
 * Subscription to taapi.io for RSI technical indicators
 
 # Acknowledgments
