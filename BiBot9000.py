@@ -10,6 +10,7 @@ This is an automated trading bot built for the Binance platform, which places au
 
 v0.1 - Updated 7/25/2020 - BTC and ETH price and RSI tracking. Buy/Sell Automation from preset criteria. 
 v0.2 - Updated 7/30/2020 - Bug fixes and tweaks
+v0.3 - Updated 8/17/2020 - ETH ORder Calc, minor bug fix
 
 @author: dantasticdan
 """
@@ -22,6 +23,7 @@ from time import sleep
 from binance.client import Client
 
 from BinanceKeys import BinanceKey1
+from BinanceKeys import parameters
 
 #Binance API Definitions
 api_key = BinanceKey1['api_key']
@@ -35,18 +37,17 @@ indicator = "rsi"
  # Define endpoint 
 endpoint = f"https://ta.taapi.io/rsi"
 
-
 def run():
     inOrder= False
     watch_list = ['SYSBTC','GVTBTC','CDTBTC','TROYBTC','RUNEBTC','SKYBTC','SXPBTC','NULSBTC']
     micro_cap_coins = ['ICXBNB', 'BRDBNB', 'NAVBNB', 'RCNBNB','FUNETH','COTETH']
-    eth_watch_list = ['BQXETH','EVXETH']
+    eth_watch_list = ['VETETH','ZILETH','NCASHETH','LENDETH','MANAETH']
     
     bot_watch_list = []
     eth_bot_watch_list = []
     rsi_list = []
     
-    last_active_symbol = ['STMXBTC']
+    last_active_symbol = ['LOOMETH']
     
      #time_horizon = "Short"
     #Risk = "High"
@@ -90,12 +91,13 @@ def run():
         
         #####################
         ##Use Bot Watch List
-        watch_list=bot_watch_list
+        #watch_list=bot_watch_list
         
         ##Use ETH Watch List
         #watch_list=eth_watch_list
+        
         ##Use ETH Bot Watch List
-        #watch_list=eth_bot_watch_list
+        watch_list=eth_bot_watch_list
         
         #Query Watch List for Price and RSI
         for pair in watch_list:
@@ -104,7 +106,6 @@ def run():
             print(pair, end =":  ")
             print(avg_price['price'], end ="  ")
             rsi=(get_rsi(pair))
-            #rsi_index = watch_list.index(pair)
             rsi_index = watch_list.index(pair)
             rsi_value = (rsi['value'])
             rsi_list.insert(rsi_index, rsi_value)  
@@ -157,8 +158,7 @@ def run():
                 market_buy(symbol, order_amount)
                 print("Buy Order Triggered!! (RSI < 30)")
                 print("Symbol: ",symbol)
-                print("Amount: ",order_amount) 
-               
+                print("Amount: ",order_amount)
                 inOrder= True
             #elif rsi_value > 70:
             #    print("RSI Selling Opportunity (RSI < 70), but we don't have an Order yet")
@@ -180,8 +180,10 @@ def get_rsi(symbol):
         taapi_symbol = symbol[:5]+'/'+symbol[5:]
     elif len(symbol) > 6:
         taapi_symbol = symbol[:4]+'/'+symbol[4:]   
-    else:
+    elif len(symbol) > 5:
         taapi_symbol = symbol[:3]+'/'+symbol[3:] 
+    else:
+        taapi_symbol = symbol[:2]+'/'+symbol[2:] 
     #print(taapi_symbol)
     #Send get request and save the response as response object 
     parameters['symbol'] = taapi_symbol
@@ -191,16 +193,26 @@ def get_rsi(symbol):
     return result
 
 def calculate_order(order_symbol):
-    #Check Available BTC Balance
-    balance = client.get_asset_balance(asset='BTC')
-    btc_available = balance['free']
-    #print("$$$$$$$$$$$")
-    print("BTC Balance: ",btc_available)
+    #Check Available Balance and return order amount 
+    if order_symbol.endswith('ETH') == True:
+        balance = client.get_asset_balance(asset='ETH')
+        bal_available = balance['free']
+        print("ETH Balance: ",bal_available)
+    elif order_symbol.endswith('BTC') == True:
+        balance = client.get_asset_balance(asset='BTC')
+        bal_available = balance['free']
+        print("BTC Balance: ",bal_available)
+    else:
+        print("Invalid Symbol")
+        balance = 0
+        bal_available = 0
+        
     #Get price for symbol to trade
     avg_price = client.get_avg_price(symbol=order_symbol)
     order_symbol_price = avg_price['price']
-    order_amount = (float(btc_available) / float(order_symbol_price))
-    order_amount = int(order_amount)
+    order_amount = (float(bal_available) / float(order_symbol_price))
+    order_amount = int(order_amount*0.95)
+    #order_amount = round(order_amount,2)
     print(order_symbol,end =" Price: ")
     print(order_symbol_price)
     print(order_amount)
